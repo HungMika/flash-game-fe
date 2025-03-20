@@ -51,6 +51,7 @@ export async function logIn(email: string, password: string) {
 }
 
 export async function logOut() {
+  //TODO: log out api
   return true;
 }
 

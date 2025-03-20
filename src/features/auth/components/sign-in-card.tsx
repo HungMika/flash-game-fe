@@ -10,13 +10,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
 import { TriangleAlert } from "lucide-react";
-
-import { SignInflow } from "../api/auth-types";
-import { useRouter } from "next/navigation";
-import { logIn } from "@/services/api";
 import { FcGoogle } from "react-icons/fc";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { SignInflow } from "../api/auth-types";
+
+import { logIn } from "@/services/api";
+import { setTeacher } from "@/lib/storage";
 
 interface SignInCardProps {
   setstate: (state: SignInflow) => void;
@@ -44,7 +46,7 @@ export const SignInCard = ({ setstate }: SignInCardProps) => {
         return;
       }
 
-      localStorage.setItem("teacher", JSON.stringify(teacher));
+      setTeacher(teacher);
       router.push("/dashboard");
     } catch (err) {
       setError("Something went wrong!");

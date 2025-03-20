@@ -11,9 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TriangleAlert } from "lucide-react";
+
 import { useState } from "react";
-import { SignInflow } from "../api/auth-types";
 import { signUp } from "@/services/api";
+import { setTeacher } from "@/lib/storage";
+import { useRouter } from "next/navigation";
+import { SignInflow } from "../api/auth-types";
 
 interface SignUpCardProps {
   setstate: (state: SignInflow) => void;
@@ -26,6 +29,8 @@ export const SignUpCard = ({ setstate }: SignUpCardProps) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+
+  const router = useRouter();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,8 +45,9 @@ export const SignUpCard = ({ setstate }: SignUpCardProps) => {
     try {
       const newTeacher = await signUp(username, email, password);
       console.log("Signed up successfully:", newTeacher);
-      alert("Sign up successful! You can now sign in.");
-      setstate("SignIn");
+
+      setTeacher(newTeacher);
+      router.push("/dashboard");
     } catch (err: any) {
       setError("Sign up failed");
     } finally {
