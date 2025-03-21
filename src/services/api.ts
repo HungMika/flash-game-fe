@@ -56,14 +56,33 @@ export async function logOut() {
 }
 
 // SUBJECT CRUD
+
+function saveSubjectsToLocalStorage() {
+  localStorage.setItem("subjects", JSON.stringify(subjects));
+}
+
+function loadSubjectsFromLocalStorage() {
+  const stored = localStorage.getItem("subjects");
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    subjects.length = 0;
+    subjects.push(...parsed);
+  }
+}
+
 export async function createSubject(name: string, ageGroup: string, teacherId: string) {
+  loadSubjectsFromLocalStorage();
+
   const id = crypto.randomUUID();
   const subject = { id, name, ageGroup, teacherId };
   subjects.push(subject);
+
+  saveSubjectsToLocalStorage();
   return subject;
 }
 
 export async function getSubjectsByAge(ageGroup: string) {
+  loadSubjectsFromLocalStorage();
   return subjects.filter(s => s.ageGroup === ageGroup);
 }
 
@@ -71,11 +90,28 @@ export async function getSubjectsByTeacher(teacherId: string) {
   return subjects.filter(s => s.teacherId === teacherId);
 }
 
+export async function updateSubjectName(subjectId: string, newName: string, teacherId: string) {
+  const subject = subjects.find(s => s.id === subjectId && s.teacherId === teacherId);
+  if (!subject) throw new Error("Subject không tồn tại hoặc không thuộc giáo viên này");
+
+  subject.name = newName;
+  saveSubjectsToLocalStorage();
+
+  return subject;
+}
+
 export async function deleteSubject(subjectId: string, teacherId: string) {
+  loadSubjectsFromLocalStorage();
+
   const index = subjects.findIndex(s => s.id === subjectId && s.teacherId === teacherId);
-  if (index !== -1) subjects.splice(index, 1);
+  if (index !== -1) {
+    subjects.splice(index, 1);
+    saveSubjectsToLocalStorage();
+  }
+
   return true;
 }
+
 
 // QUESTION CRUD
 export async function addQuestion(subjectId: string, questionText: string, options: Option[], answerId: string) {
